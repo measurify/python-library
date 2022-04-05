@@ -1,0 +1,11 @@
+{
+"thing":"Ospedale",
+"device":"cardiofrequenzimetro",
+"items":{
+"heartValues":[1,2,3,4,5,6,7,8,9,10,11,12,13,14]
+},
+"tags":[],
+"startdate":"2022-01-01T00:00:00+01:00",
+"enddate":"2022-01-01T00:00:00+01:00",
+"feature":"heartValues"
+}
