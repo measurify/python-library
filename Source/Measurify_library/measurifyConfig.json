@@ -7,7 +7,7 @@
     "features_route":"v1/features",
     "devices_route":"v1/devices",
     "measurements_route":"v1/measurements",    
-    "dataset_route":"v1/dataset",
+    "dataset_route":"v1/datasets",
     "dataset_info":"/info",
     "file":"C:\\Users\\matte\\Postman\\files\\csvtest.txt",
     "description":"C:\\Users\\matte\\Postman\\files\\Allegato.txt"
