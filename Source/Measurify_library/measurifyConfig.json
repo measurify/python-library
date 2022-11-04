@@ -1,5 +1,5 @@
 {
-    "url":"https://localhost/",
+    "url":"https://localhost:8080/",
     "username" : "admin",
     "password" : "admin",
     "login_route":"v1/login",
@@ -9,6 +9,6 @@
     "measurements_route":"v1/measurements",    
     "dataset_route":"v1/datasets",
     "dataset_info":"/info",
-    "file":"C:\\Users\\matte\\Postman\\files\\csvtest.txt",
-    "description":"C:\\Users\\matte\\Postman\\files\\Allegato.txt"
+    "file":"",
+    "description":""
 }

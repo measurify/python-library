@@ -1,29 +1,27 @@
-import enum
 import string
-from typing import Literal
 import requests
 import json
-import Measurify_Dictionary as md 
+from . import Measurify_Dictionary as md 
 import urllib3
 import pandas as pd
 import numpy as np
 from timeit import default_timer as timer
-import ujson
-import rapidjson
-#import nujson
-import orjson
-import simplejson
 from enum import Enum
 from typing import Literal
 import time
+import os
+path = os.path.dirname(__file__)
+path = str(path)
 
+import sys
+sys.path.append(path)
 
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)#disable warning certificate
 
 
 class Create:
-    def __init__(self,config_Directory:str="measurifyConfig.json",username:str="",password:str="",options:str=None,verbose:bool=False):
+    def __init__(self,config_Directory:str=path + "\measurifyConfig.json",username:str="",password:str="",options:str=None,verbose:bool=False):
         self.auth_token=0
         self.tknExpTime=0
         self.data=json.load(open(config_Directory))        
@@ -33,14 +31,7 @@ class Create:
                 if key in self.data:                    
                     self.data[key]=options[key]  
         self.verbose=verbose
-        self.filter=None
-        self.jsont=[]
-        self.jsonload=[]
-        self.ujson=[]
-        self.rapidjson=[]
-        #self.nujson=[]
-        self.orjson=[]
-        self.simplejson=[]
+        self.filter=None        
         self.login(username=username,password=password)
     
     
@@ -134,7 +125,7 @@ class Create:
         return dict  
 
     
-    def getDataset(self,filename:string=None,filter:dict=None,verbose:bool=None,format:Format=Format.CSV,downloadPath:string=None,limit:int=None,page:int=None):#name is csv name when uploaded on server
+    def getDataset(self,filename:string=None,filter:dict=None,verbose:bool=None,format:Format=Format.JSON,downloadPath:string=None,limit:int=None,page:int=None):#name is csv name when uploaded on server
         if verbose is None:
             verbose=self.verbose
         if filter is None:
@@ -176,7 +167,7 @@ class Create:
         if(format==self.Format.CSVPLUS):
             formatRequest="text/csv+"
         if(format==self.Format.DATAFRAME):
-            formatRequest="dataframe"
+            formatRequest="text/dataframe"
         dataJson=self.getGeneric(route,verbose,formatRequest=formatRequest)
 
         if downloadPath is not None:            
@@ -202,7 +193,7 @@ class Create:
                 print(md.dictionary["tknError"])
                 return None
         headers={'Authorization':self.auth_token}        
-        if formatRequest is not None and formatRequest != "dataframe"and formatRequest != "info":
+        if formatRequest is not None and formatRequest != "text/dataframe"and formatRequest != "info":
             headers={'Authorization':self.auth_token,'Accept':formatRequest}        
 
         #urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -213,76 +204,8 @@ class Create:
             verboseprint(md.dictionary["accepted"],verbose)
             verboseprint(response.content,verbose)
 
-            #print(type(response.content))
-
-
-            if(formatRequest==None or formatRequest=="text/json"):
-
-                #benchmark .json()
-                #start = timer()  
-                data=response.json()#["docs"]  
-                #print(data["docs"])          
-                #end = timer()            
-                #self.jsont.append((end - start)*1000)
-                #print(".json = "+str((end - start)*1000)+" ms.")
-                #print(type(data))
-                #print(data)
-                """
-                #benchmark .json()
-                start = timer()  
-                data=json.loads(response.content)     
-                end = timer() 
-                self.jsonload.append((end - start)*1000)           
-                #print("json.loads = "+str((end - start)*1000)+" ms.")
-                #print(type(data))
-                #print(data)
-
-                #benchmark ujson()
-                start = timer()  
-                data=ujson.loads(response.content) 
-                end = timer() 
-                self.ujson.append((end - start)*1000)           
-                #print("ujson.loads = "+str((end - start)*1000)+" ms.") 
-                #print(type(data))   
-                #print(data)   
-                
-                #benchmark rapidjson()
-                start = timer()  
-                data=rapidjson.loads(response.content) 
-                end = timer() 
-                self.rapidjson.append((end - start)*1000)           
-                #print("rapidjson.loads = "+str((end - start)*1000)+" ms.") 
-                #print(type(data))   
-                #print(data)    
-
-                #benchmark nujson()
-                #start = timer()  
-                #data=nujson.loads(response.content) 
-                #end = timer()    
-                #self.nujson.append((end - start)*1000)        
-                #print("nujson.loads = "+str((end - start)*1000)+" ms.") 
-                #print(type(data))   
-                #print(data)
-
-                #benchmark orjson()
-                start = timer()  
-                data=orjson.loads(response.content) 
-                end = timer()    
-                self.orjson.append((end - start)*1000)        
-                #print("orjson.loads = "+str((end - start)*1000)+" ms.") 
-                #print(type(data))   
-                #print(data)
-
-                #benchmark simplejson()
-                start = timer()  
-                data=simplejson.loads(response.content) 
-                end = timer()    
-                self.simplejson.append((end - start)*1000)        
-                #print("simplejson.loads = "+str((end - start)*1000)+" ms.") 
-                #print(type(data))   
-                #print(data)            
-                """
-
+            if(formatRequest==None or formatRequest=="text/json"):                
+                data=response.json()
                 #verboseprint(data,verbose)
                 data=data["docs"]
                 #print(type(data))
@@ -299,11 +222,11 @@ class Create:
                 data=response.content
                 data=str(data)    
                 data=data.replace("\\n","\n")                 
-            if(formatRequest=="dataframe"):
+            if(formatRequest=="text/dataframe"):
                 data=response.content
                 data=json.loads(data)     
                 #print(data)                     
-                data=data[0]                
+                #data=data[0]                
                 data=pd.DataFrame.from_dict(data)
             if(formatRequest=="info"):
                 data=response.content
@@ -372,26 +295,6 @@ class Create:
         else:
             verboseprint(md.dictionary["error"],verbose)
             print(response.content)
-
-    """
-    def getBenchmark(self):
-        bm = pd.DataFrame({
-                ".json": self.jsont,
-                "json.loads": self.jsonload,
-                "ujson.loads": self.ujson,
-                "rapidjson.loads": self.rapidjson,
-                #"nujson.loads": self.nujson,            
-                "orjson.loads": self.orjson,
-                "simplejson.loads":self.simplejson
-        })
-        minimumIndex=bm.idxmin(axis=1)
-        #print (minimumIndex)
-        minidx = pd.DataFrame({
-                "Minimum": minimumIndex,
-        })
-        bm=pd.concat([bm,minidx],axis=1)
-        return bm
-    """
 
 def verboseprint(arg:str,verbose:bool):
     if verbose:
