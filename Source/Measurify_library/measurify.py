@@ -21,7 +21,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)#disable warn
 
 
 class Create:
-    def __init__(self,config_Directory:str=path + "\measurifyConfig.json",username:str="",password:str="",options:str=None,verbose:bool=False):
+    def __init__(self,config_Directory:str=path + "\measurifyConfig.json",username:str="",password:str="",tenant:str="",options:str=None,verbose:bool=False):
         self.auth_token=0
         self.tknExpTime=0
         self.data=json.load(open(config_Directory))        
@@ -32,7 +32,7 @@ class Create:
                     self.data[key]=options[key]  
         self.verbose=verbose
         self.filter=None        
-        self.login(username=username,password=password)
+        self.login(username=username,password=password,tenant=tenant)
     
     
     class Format(Enum):
@@ -42,7 +42,7 @@ class Create:
         CSVPLUS = 'CSV+' 
 
 
-    def login(self, username:str="",password:str="",verbose:bool=None):#username=data["username"],password=self.data["password"]):
+    def login(self, username:str="",password:str="",tenant:str="",verbose:bool=None):#username=data["username"],password=self.data["password"]):
             if verbose is None:
                 verbose=self.verbose
             if username=="":
@@ -50,8 +50,10 @@ class Create:
                 username=self.data["username"]
             if password=="":
                 password=self.data["password"]
+            if tenant=="":
+                tenant=self.data["tenant"]
             
-            payload={"username" : username,"password" : password}
+            payload={"username" : username,"password" : password,"tenant":tenant}
             response = requests.post(self.data["url"]+self.data["login_route"], data=payload,verify=False)#verify = false perchè non c'è il certificato
             verboseprint("Status Code: "+ str(response.status_code),verbose)
             if response.ok:
